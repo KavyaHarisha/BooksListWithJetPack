@@ -1,6 +1,5 @@
 package com.service.bookslistview.di
 
-import android.R.attr.level
 import com.service.bookslistview.data.network.BooksApiService
 import com.service.bookslistview.data.repository.BooksRepository
 import dagger.Module

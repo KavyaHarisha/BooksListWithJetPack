@@ -24,21 +24,21 @@ class BooksRepository @Inject constructor(private val booksApiService: BooksApiS
      * @param query The search term to find books. Defaults to "android".
      * @return A [Flow] that emits the various states of the API request, encapsulated in an [ApiStates] object.
      */
-     fun getAllBooks(query: String= "android"): Flow<ApiStates<BooksResponse>>{
+    fun getAllBooks(query: String = "android"): Flow<ApiStates<BooksResponse>> {
         return flow {
             emit(ApiStates.Loading)
             try {
-            val booksResponse = booksApiService.getBooks(query)
-                    emit(ApiStates.Success(booksResponse))
-                }catch (e: Exception){
-                    emit(ApiStates.Error(e.localizedMessage ?: "Something went wrong"))
-                }
+                val booksResponse = booksApiService.getBooks(query)
+                emit(ApiStates.Success(booksResponse))
+            } catch (e: Exception) {
+                emit(ApiStates.Error(e.localizedMessage ?: "Something went wrong"))
+            }
         }.flowOn(Dispatchers.IO)
     }
 
 }
 
-sealed class ApiStates <out T> {
+sealed class ApiStates<out T> {
     object Loading : ApiStates<Nothing>()
     data class Success<T>(val data: T) : ApiStates<T>()
     data class Error(val message: String) : ApiStates<Nothing>()
