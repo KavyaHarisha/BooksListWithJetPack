@@ -39,7 +39,8 @@ import com.service.bookslistview.ui.viewmodel.BooksViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BooksListScreen(booksViewModel: BooksViewModel) {
+fun BooksListScreen(booksViewModel: BooksViewModel,
+                    onBookClick: (BookItem) -> Unit) {
     val books by booksViewModel.booksState.collectAsState()
     var query by remember { mutableStateOf("") }
 
@@ -60,7 +61,8 @@ fun BooksListScreen(booksViewModel: BooksViewModel) {
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            query = searchBooks(query)
+            SearchBooks(query,
+                onQueryChange = { query = it })
 
             Spacer(modifier = Modifier.padding(4.dp))
 
@@ -90,7 +92,7 @@ fun BooksListScreen(booksViewModel: BooksViewModel) {
                                 }
                             }
                         }
-                        BooksListItemView(filteredBooks)
+                        BooksListItemView(filteredBooks,onBookClick)
                     }
                 }
             }
@@ -100,7 +102,8 @@ fun BooksListScreen(booksViewModel: BooksViewModel) {
 }
 
 @Composable
-private fun BooksListItemView(filteredBooks: List<BookItem>?) {
+private fun BooksListItemView(filteredBooks: List<BookItem>?,
+                              onBookClick: (BookItem) -> Unit) {
     LazyColumn {
         filteredBooks?.size?.let {
             items(it) { index ->
@@ -109,7 +112,8 @@ private fun BooksListItemView(filteredBooks: List<BookItem>?) {
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth()
-                        .height(120.dp)
+                        .height(120.dp),
+                    onClick = { onBookClick(book) }
                 ) {
                     Row(modifier = Modifier.padding(8.dp)) {
                         BookImageFromUrl(book)
@@ -153,11 +157,11 @@ private fun BookImageFromUrl(book: BookItem) {
 }
 
 @Composable
-private fun searchBooks(query: String): String {
-    var query1 = query
+private fun SearchBooks(query: String,
+            onQueryChange: (String) -> Unit) {
     TextField(
-        value = query1,
-        onValueChange = { query1 = it },
+        value = query,
+        onValueChange = onQueryChange,
         label = { Text("Search for books...") },
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
@@ -172,5 +176,4 @@ private fun searchBooks(query: String): String {
             disabledIndicatorColor = Color.Transparent
         )
     )
-    return query1
 }
